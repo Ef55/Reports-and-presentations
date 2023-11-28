@@ -1,0 +1,12 @@
+\[
+    \prftree[r]{T-App}
+        {\prftree[r]{T-Abs}
+            {\prftree[r]{T-Var}
+                {\slistindexing{\slist{T,T}}{0} = T}
+                {\typerel{\slist{T,T}}{0}{T}}}
+            {\typerel{\slist{T}}{\abs{T}{0}}{\arrowtype{T}{T}}}}
+        {\prftree[r]{T-Var}
+            {\prfassumption{\slistindexing{\slist{T}}{0} = T}}
+            {\typerel{\slist{T}}{0}{T}}}
+        {\typerel{\slist{T}}{\app{(\abs{T}{0})}{0}}{T}}
+\]

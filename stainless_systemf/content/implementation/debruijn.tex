@@ -1,0 +1,107 @@
+
+\newcommand{\cdrange}[0]{\srangelo{c}{c+d}}
+
+Dealing with De Brujin's notation was unarguably the most time-consuming part of the project. In particular,
+the evaluation relation requires the use of negative shifts. 
+When performing negative shifts, it must be verified that no variable will end up being below 0. 
+Therefore, theorems to know which variables are free (the bond between free variables and validity of negative shifts is discussed in \cref{sec:negshift}) and others to know how shifting and substituting affect free variables were required. In the rest of this section, we will focus on free variables inside types; however the same explanation holds for free term variables inside terms and free type variables inside terms as well. 
+
+Formally, the set of free variables of a type is defined as follows:
+\begin{alignat*}{2}
+        &\freevar{k} &&\defeq \enumset{k} \\
+        &\freevar{\inlcode{char}^{*}} &&\defeq \emptyset \\
+        &\freevar{\arrowtype{T_1}{T_2}} &&\defeq \freevar{T_1} \sunion \freevar{T_2}\\
+        &\freevar{\universaltype{t}} &&\defeq \setbuilder{x - 1}{x \in \left(\freevar{t} \sdiff \enumset{0}\right)} 
+\end{alignat*}
+However, what is really interesting is not the set of free variables of a given type, but a weaker property: whether this type contains free variables in a particular range (this is again related to the ``free variables -- negative shift'' relation). 
+
+This property translates in checking whether the intersection of the set of free variables and the range of interest is empty; however, manipulating sets and set intersections would quickly become cumbersome.
+
+An easier solution arose using the relation in \cref{fig:freevar_rel}, whose right hand side is either trivial (\inlcode{false} and $k \in \cdrange$) or can be computed using the relation recursively.
+
+We were thus able to define \inlcode{hasFreeVariablesIn}, a function that recursively computes the right hand side of the relation (see \cref{fig:def_hasFreeVariablesIn}), and then prove its correctness:
+
+\begin{figure*}
+    \begin{subfigure}{\linewidth}
+    For $c, d \in \mathbb{N}$
+    \begin{alignat*}{2}
+        &\freevar{k} \sinter \cdrange \neq \emptyset && \iff k \overset{?}{\in} \cdrange \\
+        &\freevar{\inlcode{char}^{*}} \sinter \cdrange \neq \emptyset && \iff \inlcode{false} \\
+        &\freevar{\arrowtype{t_1}{t_2}} \sinter \cdrange \neq \emptyset && \iff 
+        \big( \freevar{t_1} \sinter \cdrange \neq \emptyset \big) \lor
+        \big( \freevar{t_2} \sinter {\cdrange} \neq \emptyset \big) \\
+        &\freevar{\universaltype{t}} \sinter \cdrange \neq \emptyset &&\iff \freevar{t} \sinter [c + 1, c + d + 1[ \neq \emptyset
+    \end{alignat*}
+    \end{subfigure}
+    \caption{Free variable range relation}
+    \label{fig:freevar_rel}
+\end{figure*}
+
+
+
+\begin{lemma}[\inlcode{hasFreeVariablesIn} completeness]\label{thm:freevarsin_compl}
+    For all type $T \in \ltypes$ and $c,d,k \in \N$ 
+    such that 
+    \[k \in \inlcode{T.freeVariables} \mand k \in \srangelo{c}{c+d}\]
+    we have
+    $\inlcode{T.hasFreeVariablesIn(c, d)}$.
+\end{lemma}
+
+\begin{lemma}[\inlcode{hasFreeVariablesIn} soundness]\label{thm:freevarsin_sound}
+    For all type $T \in \ltypes$ and $c,d \in \N$ 
+    such that 
+    \[\forall k \in \inlcode{T.freeVariables}:\ k \not\in \srangelo{c}{c+d}\]
+    we have 
+    $\neg\inlcode{T.hasFreeVariablesIn(c, d)}$.
+\end{lemma}
+
+\begin{ucorollary}
+    \inlcode{hasFreeVariablesIn} is correct, i.e.
+    \begin{gather*}
+        \inlcode{T.hasFreeVariablesIn(c, d)} \\
+        \iff \\
+        \freevar{T} \sinter \cdrange \neq \emptyset
+    \end{gather*}
+\end{ucorollary}
+
+\begin{figure}[H]
+    \centering
+    \lstinputlisting{code/hasFreeVariablesIn.scala}
+    \caption{Implementation of \inlcode{hasFreeVariablesIn}}
+    \label{fig:def_hasFreeVariablesIn}
+\end{figure}
+
+\noindent
+Therefore, we could prove theorems for \inlcode{hasFreeVariablesIn}, which was way easier since we did not have to manipulate set intersections.
+
+First, we proved how to manipulate ranges that do not contain free variables. In fact, if there are no free variables in $\srangelo{a}{b}$ then there are no free variables in $\srangelo{a'}{b'}$ for $a' \geq a$ and $b' \leq b$. In addition, if there are no free variables in the ranges $\srangelo{a}{b}$ and $\srangelo{b}{c}$, then there are none in $[a, c[$ as well. 
+
+After that, we needed to track free variables after shifts or substitutions, leading to two main lemmas:
+
+\begin{lemma}\label{thm:free_shift}
+    For all type $T \in \ltypes$ and $a,a',c,d \in \N$ such that
+    $T$ has no free variables in $\srangelo{a}{a'}$, we have that
+    \[\tshift{d}{c}{T} \text{ has no free variables in } \begin{cases}
+    \srangelo{a+d}{a'+d} &\text{if } c \leq a\\
+    \srangelo{a}{a'} &\text{if } c \geq a
+    \end{cases}\]
+\end{lemma}
+
+\begin{lemma}\label{thm:free_subst}
+    For all types $T, S \in \ltypes$ and $c,c',d, d', j \in \N$ such that
+    $S$ has no free variables in $\srangelo{c}{c'}$ and $T$ has no free variables in $\srangelo{d}{d'}$, we have that
+    \[\substitution{j}{S}{T} \text{ has no free variables in } \srangelo{\max(c, d)}{\min(c', d')}\]
+\end{lemma}
+
+\noindent
+These theorems were used to prove that some types will have a range without free variables, which means that a negative shift can be applied to the resulting type;
+in particular:
+
+\begin{ucorollary}
+    The negative shift in the \textup{T-TApp} typing rule (\cref{fig:systemf_def}) is valid,
+    i.e. $\tshift{-1}{0}{\substitution{0}{\tshift{1}{0}{T_2}}{T}}$ is a type without negative variables.
+\end{ucorollary}
+
+\noindent
+As already mentioned, all of this can also be applied to term shifting \& substitution as well as for type shifting \& substitution inside of terms or environments.
+In particular, the same lemmas can be proved as well.

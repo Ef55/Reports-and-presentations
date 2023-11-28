@@ -1,0 +1,37 @@
+When we enter an abstraction, the term variable 0 refers to the bound variable and the free variables (those in the environment) start from 1. Therefore, we need to prepend an element to the environment in order for the free variables to start from 1. When we enter in a type abstraction, we need to run a similar trick. In fact, the type variable 0 will refer to the bound variable and the free type variables will start from 1. Therefore, the free type variables in the environment will now start from 1 instead of 0. That is why we need to shift them by 1, and therefore shift the entire environment by 1. Let's see an example that illustrates the solution. We know that the term $\tapp{(\tabs{(\abs{0}{1})})}{T}$ reduces to $\abs{T}{1}$ and intuitively has type $\arrowtype{T}{0}$ under the environment $\{0\}$. However, if we do not shift the environment, we obtain the following type derivation:
+
+\[
+    \prftree[r]{T-TApp}
+        {\prftree[r]{T-TAbs}
+            {\prftree[r]{T-Abs}
+                {\prftree[r]{T-Var}
+                    {\slistindexing{\slist{0, 0}}{1} = 0}
+                    {\typerel{\slist{0, 0}}{1}{0}}}
+                {\typerel{\slist{0}}{\abs{0}{1}}{\arrowtype{0}{0}}}}
+            {\typerel{\slist{0}}{\tabs{(\abs{0}{1})}}{\universaltype{\arrowtype{0}{0}}}}}
+        {\typerel{\slist{0}}{\tapp{(\tabs{(\abs{0}{1})})}{T}}{\arrowtype{T}{T}}}
+\]
+
+We can formally check that this is false by reducing this term and checking that both types do not match which contradicts the preservation property:
+
+\[
+{\prftree[r]{T-Abs}
+    {\prftree[r]{T-Var}
+        {\slistindexing{\slist{T, 0}}{1} = 0}
+    {\typerel{\slist{T, 0}}{1}{0}}}
+{\typerel{\slist{0}}{\abs{T}{1}}{\arrowtype{T}{0}}}}
+\]
+
+The issue is then solved as soon as we shift the environment when typing the type abstraction:
+
+\[
+    \prftree[r]{T-TApp}
+        {\prftree[r]{T-TAbs}
+            {\prftree[r]{T-Abs}
+                {\prftree[r]{T-Var}
+                    {\slistindexing{\slist{0, 1}}{1} = 1}
+                    {\typerel{\slist{0, 1}}{1}{1}}}
+                {\typerel{\slist{1}}{\abs{0}{1}}{\arrowtype{0}{1}}}}
+            {\typerel{\slist{0}}{\tabs{(\abs{0}{1})}}{\universaltype{\arrowtype{0}{1}}}}}
+        {\typerel{\slist{0}}{\tapp{(\tabs{(\abs{0}{1})})}{T}}{\arrowtype{T}{0}}}
+\]

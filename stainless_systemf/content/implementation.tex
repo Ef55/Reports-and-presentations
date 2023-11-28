@@ -1,0 +1,111 @@
+\subsection{Preliminaries}
+Our project has been implemented and verified using Stainless~\cite{stainless} and is available on \href{\repourl}{Github}.
+The code is organized as follows:
+\begin{itemize}%[topsep=0.2em]
+    \item \pvfile{Utils} Additional theorems on \inlcode{Option} and \inlcode{List};
+    \item \pvfile{SystemF} Definition of types, terms, free variables and theorems on free variables;
+    \item \pvfile{Transformations} Definitions and theorems related to substitution and shifting;
+    \item \pvfile{Reduction} Definition and theorems related to the reduction relation;
+    \item \pvfile{Typing} Definition of typing derivation and main theorems of System F i.e. type uniqueness and type safety.
+\end{itemize}
+As mentioned, the proofs were originally done for the simply typed lambda calculus (with fixpoint).
+These original proofs are also available on our \href{\branchurl{stlc}}{repository}. 
+Note however that many improvements were made to the proofs once we started working on System F,
+and these improvements were not back-ported to the simply typed lambda calculus proofs.
+
+Although our proofs mainly mirror the ones from \cite{tapl}, 
+many tricks were required to mechanize the proofs. 
+We will first introduce the more general points of the original implementation for the simply typed lambda calculus,
+and then dwell on the additions we did once this original part was done.
+
+\subsection{Typing derivations}
+\input{content/implementation/typing}
+
+\subsection{Reduction relation}
+
+The way we implemented and verified the reduction relation is a bit reminiscent of how typing relations were done, but not quite similar:
+
+\begin{itemize}
+    \item The ``specification'' was first implemented as a \inlcode{reducesTo} function, which is used to determine whether a term reduces to another. It is implemented such that it is possible, without too much trouble, to ensure that it matches the definition in \cref{fig:systemf_def};
+    \item We then defined a function which has to determine if a term does reduce, and if it is the case, to which other term. This function also defines a reduction strategy. We decided to use call-by-value as a strategy, so the function is \inlcode{reduceCallByValue};
+    \item We can then prove progress for the chosen reduction strategy.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \lstinputlisting[basicstyle=\fontsize{8}{8}\ttfamily]{code/reduction_signatures.scala}
+    \caption{The reduction functions}
+\end{figure}
+
+\noindent
+One not so obvious thing to verify before moving to progress is that the reduction strategy is sound:
+\begin{theorem}[\inlcode{reduceCallByValue} soundness]\label{thm:cbv_sound}
+    For all term $t \in \lterms$ such that \inlcode{reduceCallByValue(t)} is defined, we have
+    \[\reduces{t}{\inlcode{reduceCallByValue(t)}}\]
+\end{theorem}
+
+\noindent
+Note that there is no real ``completeness'' criterion for reduction strategies,
+except for the progress property, which can be seen as a kind of completeness.
+
+It is then (surprisingly) trivial to prove progress:
+\begin{figure}[h]
+    \centering
+    \lstinputlisting{code/progress.scala}
+    \caption{Stainless proof of \cref{thm:progress}}
+\end{figure}
+
+\noindent
+The proof is however tied to one particular evaluation strategy. 
+One could try to generalize as much as possible, i.e. by proving it for full $\beta$-reduction. It might even be possible to prove it for some kind of non-deterministic reduction strategy\footnote{Either by having the relation being truly non-deterministic, as Stainless seems to have a \href{https://github.com/epfl-lara/stainless/blob/160a14a5bec19b6fc386b839edbed07cdd3e70fd/frontends/library/stainless/util/Random.scala}{randomness} source, or by having the function return all reduction candidates.}, but the proof cannot be given for all evaluation strategies at once. In particular, any reduction strategy which disallows a computation rule, such as R-AbsApp, (trivially) cannot ensure progress.
+
+\subsection{Free variables and negative shifts}
+\input{content/implementation/debruijn}
+
+\subsection{Constants}\label{sec:csts}
+\input{content/implementation/constants}
+
+\subsection{From STLC to System F}
+The main challenges when moving to System F are the two new typing rules T-TAbs and T-TApp.
+In particular, the fact that the shifting and substitution operations may appear in typing derivations means that computing the type of a term becomes non-trivial, 
+e.g. assuming $\typerel{\emptyset}{t}{T}$, we get
+\begin{gather*}
+    \typerel{\emptyset}{\tapp{\tapp{(\tabs{\tabs{t}})}{S_1}}{S_2}}{T'} \qquad \textup{where}\\
+    T' \defeq \tshift{-1}{0}{\substitution{0}{\tshift{-1}{0}{S_2}}{
+        \tshift{-1}{0}{\substitution{0}{\tshift{-1}{0}{S_1}}{T}}
+    }}
+\end{gather*}
+
+\noindent
+At first, we proved some theorems depending on our exact needs at the time,
+but ended up realizing that some general commutativity theorems on shifts and substitutions would be more efficient, as all computations are combinations of the two at low-level.
+
+However, the commutativity of these operations is more convoluted than one may expect;
+more precisely, they highly depend on the ordering relation between the substituted index, the shift cutoff and the shift distance.
+
+\subsubsection{Proving through rewriting}
+When looking at the reduction rules with type preservation in mind,
+it seemed quite natural for us to prove statements such as:
+\begin{lemma}\label{thm:subst_presevation}
+    For all environment $\Gamma \in \lenvironments$, terms $t,s \in \lterms$, types $T,S \in \ltypes$ and integer $j \in \N$ such that 
+    \[
+        \typerel{\Gamma}{t}{T} \mand 
+        \typerel{\Gamma}{s}{S} \mand
+        \slistindexing{\Gamma}{j} = S
+    \]
+    we have
+    \[ \typerel{\Gamma}{\substitution{j}{s}{t}}{T} \]
+\end{lemma}
+
+Such statements can be proved by ``rewriting'' the typing derivation.
+This proceeds by induction on the original typing derivation, and modifies its subderivations as well as its conclusion so that the conclusion of the typing derivation becomes the expected typing relation (e.g. ${\typerel{\Gamma}{\substitution{j}{s}{t}}{T}}$), while keeping the whole derivation valid.
+
+This approach is quite powerful, and allows to prove some less obvious properties such as the following:
+\begin{lemma}\label{thm:types_shift}
+    For all environment $\Gamma \in \lenvironments$, term $t \in \lterms$ and type $T \in \ltypes$, we have
+    \[\typerel{\Gamma}{t}{T} \implies \typerel{\tshift{s}{c}{\Gamma}}{\tshift{s}{c}{t}}{\tshift{s}{c}{T}}\]
+\end{lemma}
+
+\noindent
+By using this approach to prove how typing changed after one single operation,
+and chaining many of them, we were able to prove preservation (\cref{thm:preservation}) for System F.

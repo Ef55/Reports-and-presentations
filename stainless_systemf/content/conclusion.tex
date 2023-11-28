@@ -1,0 +1,55 @@
+\subsection{Rundown of our work}
+In this project, we:
+\begin{itemize}
+    \item Implemented the basis of STLC (terms, types, reduction relation,\ldots);
+    \item Implemented some functions performing key operations on terms (\inlcode{reduceCallByValue}, \inlcode{deriveType});
+    \item Proved that these functions are correct;
+    \item Proved the main theorems of this calculus;
+    \item Expanded all of this to System F.
+\end{itemize}
+All theorems we mentioned in the present document were proved; 
+\cref{tab:proofs} lists all theorems, and indicates the name of the function in Stainless as well as the file it is implemented in.
+\begin{table}[ht]
+    \begin{minipage}{\linewidth} % Minipage for footnote
+        \centering
+        \begin{tabular}{c|l}
+            Thm  & Function Name \\ \hline\hline
+            \multicolumn{2}{l}{In file \pvfile{SystemF}} \\ \hline
+            \ref{thm:freevarsin_compl} & \inlcode{hasFreeVariablesInCompleteness} \\
+            \ref{thm:freevarsin_sound} & \inlcode{hasFreeVariablesInSoundness} \\ \hline\hline
+            \multicolumn{2}{l}{In file \pvfile{Transformations}} \\ \hline
+            \ref{thm:free_shift} & \inlcode{boundRangeShiftCutoff}\\
+            & \inlcode{boundRangeShiftBelowCutoff} \\
+            \ref{thm:free_subst} & \inlcode{boundRangeSubstitutionLemma}\textit{[1-4]} \\ \hline\hline
+            \multicolumn{2}{l}{In file \pvfile{Reduction}} \\ \hline
+            \ref{thm:cbv_sound} & \inlcode{reduceCallByValueSoundness}\\ \hline\hline
+            \multicolumn{2}{l}{In file \pvfile{Typing}}  \\ \hline
+            \ref{thm:type_uniq} & \inlcode{typeDerivationsUniqueness} \\
+            \ref{thm:progress} & \inlcode{callByValueProgress}\footnote{As the name suggests, we proved this theorem for the call-by-value reduction strategy, but not for full $\beta$-reduction.} \\
+            \ref{thm:preservation} & \inlcode{preservation} \\
+            \ref{thm:td_sound} & \inlcode{deriveTypeSoundness} \\
+            \ref{thm:td_compl} & \inlcode{deriveTypeCompleteness} \\
+            \ref{thm:subst_presevation} & \inlcode{preservationUnderSubst} \\ 
+            \ref{thm:types_shift} & \inlcode{shiftAllTypes} \\ \hline \hline
+        \end{tabular}
+    \end{minipage}
+    \caption{Proofs of mentioned theorems and lemmas}
+    \label{tab:proofs}
+\end{table}
+
+\subsection{Improvements and extensions}
+
+This project could obviously be expanded by making the calculus richer (e.g. add records, mutability,\ldots) or adding typing features (existential types, System $\mathrm{F_\omega}$, \ldots).
+We will however briefly discuss less obvious extensions:
+\begin{itemize}
+    \item Generalize \cref{thm:progress} to full $\beta$-reduction;
+    \item System F has one more\footnote{In fact, it has yet one more: \emph{termination}, which is lost when the fixpoint combinator is added.} key property we didn't prove: \emph{confluence} \cite{trallthat}. 
+    This property is however classically proved (as in \cite{confluenceProof}) using theorems on the transitive closure of the reduction relation and is non-constructive, which are two things which do not go well with Stainless. 
+    Thus, a new (or less common) proof should be used.
+    \item Implement more efficient evaluation schemes.
+    Our implementation was not done with efficiency in mind, and is thus excruciatingly slow.
+    Now that our implementation is done and verified, it could be used as a specification for faster implementations.
+    
+    One could keep the same evaluation scheme, but e.g. use a Zipper~\cite{huetZipper} or do the substitutions lazily to improve performances.
+    More involved evaluation methods using e.g. interaction nets~\cite{interactionNet} or abstract machines~\cite{abstractMachines} would be more interesting, but most likely also more difficult to prove correct as well.
+\end{itemize}

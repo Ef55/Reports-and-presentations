@@ -1,0 +1,41 @@
+\newcommand{\lmbdcalculus}[0]{\ensuremath{\lambda{}}{\normalfont{}-calculus}}
+\newcommand{\blmbdcalculus}[0]{\ensuremath{\boldsymbol{\lambda{}}\textbf{-calculus}}}
+
+\newcommand{\stlc}[0]{\ensuremath{\lambda{}^{\shortrightarrow{}}}}
+\newcommand{\bstlc}[0]{\ensuremath{\boldsymbol{\lambda{}^{\rightarrow{}}}}}
+
+\newcommand{\systemf}[0]{\textup{System F}}
+
+\newcommand{\identifiers}[0]{\textsc{Identifiers}}
+\newcommand{\alphaconv}[0]{\ensuremath{\alpha{}\textup{-conversion}}}
+
+\newcommand{\app}[2]{\ensuremath{{#1}\,{#2}}}
+\newcommand{\abs}[2]{\ensuremath{\lambda{}{#1}.\ {#2}}}
+\newcommand{\tabs}[1]{\ensuremath{\Lambda{}.\ {#1}}}
+\newcommand{\tapp}[2]{\ensuremath{{#1}\left[{#2}\right]}}
+
+\newcommand{\substitution}[3]{\ensuremath{\left[{#1} \mapsto{} {#2}\right]\:{#3}}}
+
+\newcommand{\groundtype}[1]{\inlcode{#1}}
+\newcommand{\funarrow}[0]{\rightarrow{}}
+\newcommand{\arrowtype}[2]{\ensuremath{{#1} \funarrow{} {#2}}}
+\newcommand{\universaltype}[1]{\ensuremath{\forall{}.\ {#1}}}
+\newcommand{\typed}[2]{\ensuremath{{#1}{:}\, {#2}}}
+\newcommand{\typerel}[3]{\ensuremath{#1 \vdash{} #2 : {#3}}}
+
+\newcommand{\reducessymbol}[0]{\longrightarrow{}}
+\newcommand{\reducesnotsymbol}[0]{\longarrownot\longrightarrow{}}
+\newcommand{\reduces}[2]{\ensuremath{#1 \reducessymbol{} #2}}
+\newcommand{\mreduces}[2]{\ensuremath{#1 \stackrel{*}{\reducessymbol{}} #2}}
+\newcommand{\shift}[3]{{\uparrow^{#1}_{#2}\left(#3\right)}}
+\newcommand{\tshift}[3]{{\downarrow^{#1}_{#2}\left({#3}\right)}}
+
+\newcommand{\lconstants}[0]{\textsc{Constants}}
+\newcommand{\lterms}[0]{\ensuremath{\bm\lambda}}
+\newcommand{\ltypes}[0]{\ensuremath{\bm\Lambda}}
+\newcommand{\lenvironments}[0]{\ensuremath{\bm\Gamma}}
+
+\newcommand{\freevar}[1]{\textup{FV}\left(#1\right)}
+
+%% Normalization for stlc
+\newcommand{\fixpoint}[1]{\app{\textsc{Fix}}{#1}}

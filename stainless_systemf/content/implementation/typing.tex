@@ -1,0 +1,67 @@
+To prove anything related to the type of a term, we first need to define a function which tells us whether $\typerel{\Gamma}{t}{T}$. Since terms have a unique type in System F, having a function \inlcode{typeof} which, given an environment and a term, outputs its type would be convenient. However, doing so raises several issues:
+\begin{itemize}
+    \item Some terms are ill-typed; what should the function output in this case?
+    \item Type uniqueness of System F is a property we would like to prove, but we already use it implicitly in our definition of \inlcode{typeof}: this is a chicken-and-egg problem;
+    \item The type of a term depends directly of the type of the subterms and which typing rule is being applied, which are things that could be useful for some proofs. Instead, here the typing is a black box;
+    \item How can we make sure that the implementation of such a procedure is correct?
+\end{itemize}
+To overcome all of these issues, we decided to first work on typing derivations.
+A typing derivation is a proof that some term has a type, given an environment. Formally it is defined as a sequence of typing rules where each premise of a rule is either the conclusion of a previous typing rule, or an axiom. 
+It has therefor a tree-like structure (as seen in \cref{fig:td_example}), where each node is a typing rule.
+\begin{figure}[H]%
+    \centering
+    \input{figures/type_deriv}
+    \caption{Example of a typing derivation}
+    \label{fig:td_example}
+\end{figure}
+
+\noindent
+We call the conclusion $\typerel{\Gamma}{t}{T}$ of the final typing rule the conclusion of the typing derivation, and call $\Gamma$ its environment, $t$ its term and $T$ its type.
+
+    
+This definition is easily captured by Scala's case classes. 
+The trait \inlcode{TypingDerivation} represents a generic typing derivation,
+and each typing rule has itw own case class (e.g. \inlcode{AppDerivation} for T-App).
+
+However, a \inlcode{TypingDerivation} instance might not represent a correct typing derivation. Indeed, we could easily build a \inlcode{TypingDerivation} object whose subderivations do not conclude the required premises of this derivation.
+%terms are not the subterms of the original term. %A reformuler
+We thus need a function, \inlcode{isValid}, which checks whether a given typing derivation is correct. More formally, if $\sigma$ is a typing derivation concluding $\typerel{\Gamma}{t}{T}$ whose subderivations are $\{\sigma_i\}$, then \inlcode{isValid} is true if:
+\begin{itemize}
+    \item \inlcode{isValid} is true for each $\sigma_i$;
+    \item The environment and type of each $\sigma_i$ must correctly relate with $T$ and $\Gamma$;
+    the exact relation depends on the typing rule being used
+    (e.g. for most rules, $\sigma_i$'s environment must be equal to $\Gamma$,
+    but in the case of T-TAbs it must be equal to $\tshift{1}{0}{\Gamma}$);
+    \item The term of each $\sigma_i$ is the correct subterm of $t$.
+\end{itemize}
+We were then able to implement a function \inlcode{deriveType}, that given a term and an environment produces a typing derivation.
+
+Now that all this machinery is settled, we can find solutions to all of our issues:
+\begin{itemize}
+    \item If a term $t$ is ill-typed then for all typing derivations with term $t$, \inlcode{isValid} will be false, and \inlcode{deriveType} can simply return \inlcode{None};
+    \item We can prove that two valid typing derivations with the same term and environment are equal; in particular, they conclude the same type. 
+    This proves \cref{thm:type_uniq}, without using it as an assumption!
+    \item We can track all the typing rules that have been used, and we know the type of all the subterms thanks to the generated typing derivation.
+    \item Finally, we can prove the correctness of \inlcode{deriveType}
+    by proving the following two lemmas:
+\end{itemize} 
+
+\begin{lemma}[\inlcode{deriveType} soundness]\label{thm:td_sound}
+    For all environment $\Gamma \in \lenvironments$ and term $t \in \lterms$
+    such that $\inlcode{deriveType($\Gamma$,t)}$ is defined, we have
+    \[ \inlcode{deriveType($\Gamma$,t).isValid} \]
+\end{lemma}
+
+\begin{lemma}[\inlcode{deriveType} completeness]\label{thm:td_compl}
+    For all valid typing derivation $\sigma$ with environment $\Gamma$ and term $t$, we have
+    \[ \inlcode{deriveType($\Gamma$,t)} = \sigma \]
+\end{lemma}
+
+\noindent
+It is even possible to define the \inlcode{typeof} function we originally wanted:
+\begin{figure}[h]
+    \centering
+    \lstinputlisting{code/typeof.scala}
+    \caption{Implementation of \inlcode{typeof}}
+    \label{fig:def_typeof}
+\end{figure}

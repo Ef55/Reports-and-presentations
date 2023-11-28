@@ -1,0 +1,22 @@
+\newcommand{\hiddenhref}[3][]{%
+    \begingroup %
+    \hypersetup{hidelinks}%
+    \href[#1]{#2}{#3}%
+    \endgroup %
+}
+
+\newcommand{\filestyle}[1]{\tightcolorbox{gray!30}{\underline{\texttt{#1}}}}
+
+
+\newcommand{\repourl}[0]{https://github.com/Ef55/stainless-stlc}
+\newcommand{\branchurl}[1]{\repourl/tree/#1}
+
+\newcommand{\pfile}[2]{%
+    \filestyle{\hiddenhref{\repourl/tree/system-f/#1}{#2}} %
+}
+\newcommand{\pcfile}[2]{\pfile{src/main/scala/#1#2.scala}{#2.scala}}
+\newcommand{\pcfileshort}[2]{\pfile{src/main/scala/#1#2.scala}{#2}}
+\newcommand{\pvfile}[1]{\pcfile{verified/}{#1}}
+\newcommand{\pvfileshort}[1]{\pcfileshort{verified/}{#1}}
+\newcommand{\pcfilelines}[4]{\pfile{src/main/scala/#1#2.scala\#L#3-L#4}{#2.scala:L#3-L#4}}
+\newcommand{\pvfilelines}[3]{\pcfilelines{verified/}{#1}{#2}{#3}}

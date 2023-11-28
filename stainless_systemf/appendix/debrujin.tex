@@ -1,0 +1,11 @@
+In System F, using De Brujin's indices is way more subtle than in STLC, as integers are used to represent both term and type variables. 
+
+As mentioned, the context always allows to distinguish which is meant. However, this also means that a same integers can, at one place in the term, represent a term variable and, in an other place, represent a type variable even though they do not have anything in common (which can lead to confusions).
+For term variables, everything stays the same, meaning that the first integers represent variables bound by abstractions and the other ones represent free variables.
+Regarding type variables, it is quite similar, but they can either be bound by type abstractions (at the term level), or by universal types (at the type level). 
+
+For instance, in the type $\universaltype{\arrowtype{0}{1}}$, $0$ is a bound variable whereas $1$ is a free variable. 
+Similarly, in the term $\tabs{\abs{0}{2}}$, $0$ is the type variable bound by the type abstraction. Things become more intricate when we mix many of these structures. 
+In the term $\tabs{\abs{(\universaltype{(\arrowtype{0}{1})})}{2}}$, $0$ is the type variable bound by the universal quantifier and $1$ is the type variable bound by the type abstraction. 
+
+Even worse, in the term $\tabs{\abs{(\universaltype{(\arrowtype{0}{1})})}{\app{0}{1}}}$, the first $0$ and the first $1$ are the same bound type variables as in the previous example, whereas the second $0$ is the term variable bound by the abstraction and the second $1$ is a free term variable!

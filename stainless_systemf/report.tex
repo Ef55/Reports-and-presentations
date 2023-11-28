@@ -1,0 +1,113 @@
+\documentclass[sigplan,screen,nonacm,natbib=false,acmthm]{acmart}
+\usepackage[scale=0.87]{FiraMono} 
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+\usepackage{bm}
+
+\usepackage{prftree}
+
+\usepackage[sorting=none,block=space]{biblatex}
+\addbibresource{bibliography.bib}
+\setcounter{highnamepenalty}{0}
+\setcounter{lownamepenalty}{0}
+
+\usepackage{enumitem}
+\setlist{leftmargin=1.2em}
+
+\usepackage{listings}
+\lstset{
+    escapeinside=``,
+    frame=tb,
+    basicstyle=\small\ttfamily
+}
+
+\newtheorem*{ucorollary}{Corollary}
+\newcommand{\inlcode}[1]{\texttt{#1}}
+
+\input{preamble/proofs}
+\input{preamble/grammars}
+\input{preamble/lambda_calculus}
+\input{preamble/sets}
+\input{preamble/boxes}
+\input{preamble/links}
+
+
+\title{Formal verification of System F}
+\subtitle{Formal Verification 2021 Final Report}
+
+\author{Andrea Gilot}
+\affiliation{
+    \country{}
+}
+
+\author{No\'{e} De Santo}
+\affiliation{
+    \country{}
+}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+\input{content/introduction}
+
+\section{Theoretical Background}
+\input{content/theoretical_bg}
+
+\section{Implementation}
+\input{content/implementation}
+
+\section{Conclusion}
+\input{content/conclusion}
+
+\printbibliography{}
+
+\newpage
+\null
+\newpage
+
+\appendix
+
+\begin{figure*}
+    \begin{subfigure}{0.48\linewidth}
+        \centering
+        \lstinputlisting{code/negative_shift_syntactic.scala}
+        \caption{``Syntactic'' negative shift precondition}
+        \label{fig:synt_shift}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\linewidth}
+        \centering
+        \lstinputlisting{code/negative_shift_semantic.scala}
+        \caption{``Semantic'' negative shift precondition}
+        \label{fig:sem_shift}
+    \end{subfigure}
+\end{figure*}
+
+\section{De Brujin's indices in System F}\label{sec:sysf_bruijn}
+\input{appendix/debrujin}
+
+\section{Shifting the environment}\label{sec:ttabs}
+\input{appendix/env_shift}
+
+\section{Negative shift semantics}\label{sec:negshift}
+\input{appendix/negative_shift}
+
+\begin{figure*}
+    \vspace{0.3em}
+    \begin{subfigure}{\linewidth}
+    \input{figures/def_shifts}
+    \end{subfigure}
+    \caption{Definition of shift and substitution}
+    \label{fig:def_shifts}
+\end{figure*}
+
+\end{document}

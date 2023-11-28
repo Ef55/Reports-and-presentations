@@ -1,0 +1,72 @@
+We will now formally define System F and its main theorems.
+We will recall key theorems and definitions, but this section does not aim at being exhaustive, and expects prior knowledge about System F.
+Most of what we will discuss in this section can be found in \cite[Chapter~23]{tapl}.
+We will however adapt everything to De Bruijn notation \cite[Chapter~6]{tapl}
+\begin{figure*}
+    % Don't ask me why a subfigure and a raggedright are needed; I don't know, and I don't wanna
+    \begin{subfigure}{\textwidth}
+    \raggedright
+    \input{figures/def_systemf}
+    \end{subfigure}
+    \caption{Definition of System F}
+    \label{fig:systemf_def}
+\end{figure*}
+
+System F is defined in \cref{fig:systemf_def}, and is a quite straightforward adaption from \cite[Figure 23-1]{tapl}. 
+There are however a few things to note:
+\begin{itemize}
+    \item Integers are De Bruijn indices, and are used to represent both type and term variables; the context will always allow to distinguish which is meant. See \cref{sec:sysf_bruijn} for some examples;
+    \item Ground types are represented by strings ($\inlcode{char}^{*}$);
+    \item Environments are represented using lists;
+    \item $\uparrow$ represents a term variable shift, whereas $\downarrow$ represents a type variable shift;
+    \item In the T-TAbs typing rule, instead of adding a new dummy element\footnote{The element is usually an identifier, so adding it allows to know which identifiers are defined; using De Bruijn notation, those identifiers will always be an integer range $[0,n]$, so there is no real information to store.} to the environment, we shift the environment.
+    
+    The intuition behind this is discussed in \cref{sec:ttabs}.
+\end{itemize}
+
+For this definition to be complete, 
+we must still define the two operations it relies on: shifting and substitution.
+Note that many variants of these operations are used:
+substitution of a term in a term, term shift, substitution of a type in a term,\ldots{}
+since these definitions are a bit heavy, they are made available in the appendix (\cref{fig:def_shifts}).
+
+\noindent
+We can now introduce the main theorems we want to prove:
+\begin{theorem}[Type judgment uniqueness]\label{thm:type_uniq}
+    For all environment $\Gamma \in \lenvironments$, term $t \in \lterms$
+    and types $T_1,T_2 \in \ltypes$, we have
+    \[\typerel{\Gamma}{t}{T_1} \mand \typerel{\Gamma}{t}{T_2} \implies T_1 = T_2\]
+\end{theorem}
+
+\begin{theorem}[Progress]\label{thm:progress}
+    For all term $t \in \lterms$ such that ${\typerel{\emptyset}{t}{T}}$ for some type $T \in \ltypes$, then either ${\exists t' \in \lterms:\ \reduces{t}{t'}}$
+    or $t$ is a value.
+\end{theorem}
+
+\begin{theorem}[Preservation]\label{thm:preservation}
+    For all environment $\Gamma \in \lenvironments$, terms $t,t' \in \lterms$
+    and type $T \in \ltypes$, we have
+    \[\typerel{\Gamma}{t}{T} \mand \reduces{t}{t'} \implies \typerel{\Gamma}{t'}{T}\]
+\end{theorem}
+
+\noindent
+Theorem~\ref{thm:progress} raises two questions:
+\begin{enumerate}
+    \item What is a value?
+    \item Does it allow a term which is both a value and reducible?
+\end{enumerate}
+These two questions are in fact intertwined.
+The typical definition of a value is a term which is (at the top-level) an (type-)abstraction\footnote{This answer has to change when constants are added to the calculus; see \cref{sec:csts}}; in this case, the answers to the second question must be yes. We assumed this definition in our project.
+
+It is however possible to restrict the reduction relation, in particular to make it deterministic; one such restriction is the call-by-value reduction strategy \cite[Chapter 5]{tapl}. It restricts the reduction relation in the following way:
+\begin{itemize}
+    \item R-Abs and R-Tabs are not allowed;
+    \item R-App2 requires $t_1$ to be a value;
+    \item R-AbsApp requires $t_2$ to be value ($t_1$ is also a value!).
+\end{itemize}
+With these restrictions, the second answer can be no.
+
+In this project, we will prove \cref{thm:type_uniq} and \cref{thm:preservation}
+in the most general way, 
+i.e. for full $\beta$-reduction,
+but will only prove \cref{thm:progress} for the call-by-value reduction strategy.

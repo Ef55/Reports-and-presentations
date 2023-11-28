@@ -1,0 +1,87 @@
+In the following, $k,j,c\in \N,\quad d \in \Z,\quad b \in \inlcode{char}^{*},\quad t,t_1,t_2,s \in \lterms,\quad T,T_1,T_2,S \in \ltypes$ and $\emptyset,\Gamma \in \lenvironments$.
+
+\begin{subfigure}[t]{0.45\linewidth}
+    \begin{alignat*}{2}
+        &\shift{d}{c}{k} &&\defeq \begin{cases} k & \textup{if } k < c \\ k+s & \textup{if } k \geq c \end{cases} \\
+        &\shift{d}{c}{\abs{T}{t}} &&\defeq \abs{T}{\shift{d}{c+1}{t}} \\
+        &\shift{d}{c}{\app{t_1}{t_2}} &&\defeq \app{\shift{d}{c}{t_1}}{\shift{d}{c}{t_2}} \\
+        &\shift{d}{c}{\fixpoint{t}} &&\defeq \fixpoint{\shift{d}{c}{t}} \\
+        &\shift{d}{c}{\tabs{t}} &&\defeq \tabs{\shift{d}{c}{t}} \\
+        &\shift{d}{c}{\tapp{t}{T}} &&\defeq \tapp{\shift{d}{c}{t}}{T}
+    \end{alignat*}
+    \caption{Shift terms in terms}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.45\linewidth}
+    \begin{alignat*}{2}
+        & \substitution{j}{s}{k} && \defeq \begin{cases} s & \textup{if } k = j \\ k & \textup{if } k \not= j \end{cases} \\
+        & \substitution{j}{s}{(\abs{T}{t})} && \defeq \abs{T}{\substitution{j+1}{\shift{1}{0}{s}}{t}} \\
+        & \substitution{j}{s}{(\app{t_1}{t_2})} && \defeq \app{\substitution{j}{s}{t_1}}{\substitution{j}{s}{t_2}} \\
+        & \substitution{j}{s}{(\fixpoint{t})} && \defeq \fixpoint{\substitution{j}{s}{t}} \\
+        & \substitution{j}{s}{(\tabs{t})} && \defeq \tabs{\substitution{j}{\tshift{1}{0}{s}}{t}} \\
+        & \substitution{j}{s}{(\tapp{t}{T})} && \defeq \tapp{(\substitution{j}{s}{t})}{T}
+    \end{alignat*}
+    \caption{Substitute terms in terms}
+\end{subfigure}
+
+\begin{subfigure}[t]{0.45\linewidth}
+    \begin{alignat*}{2}
+        &\tshift{d}{c}{k} &&\defeq k \\
+        &\tshift{d}{c}{\abs{T}{t}} &&\defeq \abs{\tshift{d}{c}{T}}{\tshift{d}{c}{t}} \\
+        &\tshift{d}{c}{\app{t_1}{t_2}} &&\defeq \app{\tshift{d}{c}{t_1}}{\tshift{d}{c}{t_2}} \\
+        &\tshift{d}{c}{\fixpoint{t}} &&\defeq \fixpoint{\tshift{d}{c}{t}} \\
+        &\tshift{d}{c}{\tabs{t}} &&\defeq \tabs{\tshift{d}{c+1}{t}} \\
+        &\tshift{d}{c}{\tapp{t}{T}} &&\defeq \tapp{\left(\tshift{d}{c}{t}\right)}{\tshift{d}{c}{T}}
+    \end{alignat*}
+    \caption{Shift types in terms}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.45\linewidth}
+    \begin{alignat*}{2}
+        &\substitution{j}{S}{k} &&\defeq k \\
+        &\substitution{j}{S}{\abs{T}{t}} &&\defeq \abs{\substitution{j}{S}{T}}{\substitution{j}{S}{t}} \\
+        &\substitution{j}{S}{\app{t_1}{t_2}} &&\defeq \app{\substitution{j}{S}{t_1}}{\substitution{j}{S}{t_2}} \\
+        &\substitution{j}{S}{\fixpoint{t}} &&\defeq \fixpoint{\substitution{j}{S}{t}} \\
+        &\substitution{j}{S}{\tabs{t}} &&\defeq \tabs{\substitution{j+1}{\tshift{1}{0}{S}}{t}} \\
+        &\substitution{j}{S}{\tapp{t}{T}} &&\defeq \tapp{(\substitution{j}{S}{t})}{\substitution{j}{S}{T}}
+    \end{alignat*}
+    \caption{Substitute types in terms}
+\end{subfigure}
+
+
+\begin{subfigure}[t]{0.45\linewidth}
+    \begin{alignat*}{2}
+        &\tshift{d}{c}{k} &&\defeq \begin{cases} k & \textup{if } k < c \\ k+s & \textup{if } k \geq c \end{cases} \\
+        &\tshift{d}{c}{b} &&\defeq B \\
+        &\tshift{d}{c}{\arrowtype{T_1}{T_2}} &&\defeq \arrowtype{\left(\tshift{d}{c}{T_1}\right)}{\left(\tshift{d}{c}{T_2}\right)} \\
+        &\tshift{d}{c}{\universaltype{T}} &&\defeq \universaltype{\tshift{d}{c+1}{T}}
+    \end{alignat*}
+    \caption{Shift types in types}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.45\linewidth}
+    \begin{alignat*}{2}
+        & \substitution{j}{S}{k} && \defeq \begin{cases} S & \textup{if } k = j \\ k & \textup{if } k \not= j \end{cases} \\
+        & \substitution{j}{S}{b} && \defeq b \\
+        & \substitution{j}{S}{(\arrowtype{T_1}{T_2})} && \defeq \arrowtype{\big(\substitution{j}{S}{T_1}\big)}{\big(\substitution{j}{S}{T_2}\big)} \\
+        & \substitution{j}{S}{(\universaltype{T})} && \defeq \universaltype{\substitution{j+1}{\tshift{1}{0}{S}}{T}}
+    \end{alignat*}
+    \caption{Substitute types in types}
+\end{subfigure}
+
+%\begin{subfigure}[t]{\linewidth}
+%    \begin{alignat*}{2}
+%        &\tshift{d}{c}{\emptyset{}} &&\defeq \emptyset{} \\
+%        &\tshift{d}{c}{\slist{T, \Gamma}} &&\defeq \slist{\tshift{d}{c}{T}, \tshift{d}{c}{t}}
+%    \end{alignat*}
+%    \caption{Shift types in environments}
+%\end{subfigure}
+
+\begin{subfigure}[t]{\linewidth}
+    \begin{align*}
+        \tshift{d}{c}{\emptyset{}} &\defeq \emptyset{} &
+        \tshift{d}{c}{\slist{T, \Gamma}} &\defeq \slist{\tshift{d}{c}{T}, \tshift{d}{c}{t}}
+    \end{align*}
+    \caption{Shift types in environments}
+\end{subfigure}
+

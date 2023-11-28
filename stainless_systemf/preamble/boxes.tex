@@ -1,0 +1,19 @@
+% Stolen from https://tex.stackexchange.com/a/7545
+\usepackage{calc}
+\newlength{\DepthReference}
+\settodepth{\DepthReference}{g}
+\newlength{\HeightReference}
+\settoheight{\HeightReference}{T}
+\newlength{\Width}%
+\newcommand{\tightcolorbox}[2]%
+{%
+    \settowidth{\Width}{#2}%
+    %\setlength{\fboxsep}{0pt}%
+    \colorbox{#1}%
+    {%      
+        \raisebox{-\DepthReference}%
+        {%
+                \parbox[b][\HeightReference+\DepthReference][c]{\Width}{\centering#2}%
+        }%
+    }%
+}

@@ -1,0 +1,62 @@
+Before expanding our work to System F,
+we considered extending STLC instead.
+In particular, we started adding constants to the calculus.
+One simple solution to do so is to ``hard-code'' the constants in an environment,
+which will be used instead of the empty environment to type top-level terms.
+
+The example in \cref{fig:td_example} can be seen as such:
+0 is the only constant of the calculus, and in particular the only value of type $T$,
+and as such can be interpreted as being \inlcode{unit}.
+
+This approach however does not work if an infinite number of constants is needed, 
+e.g. to represent natural numbers.
+
+We thus implemented constants as a new construct of the calculus 
+(also available on our \href{\branchurl{constants}}{repository}),
+under the constraint that constants must have a ground type 
+(i.e. they cannot have a function type).
+This addition was not too complicated, and did not add anything difficult (nor interesting) to the proofs.
+
+The constraint on their type however was annoying: 
+one typical set of constants which is nice to have is the set of integers $\groundtype{Nat}$; 
+however, having integers without any operation on them 
+(such as \inlcode{Succ}, \inlcode{Pred}, \inlcode{Add},\ldots{}) does not make them worthwhile.
+
+Lifting the constraint yields some problems when mixed with the fixpoint construct;
+assume $\typerel{\emptyset{}}{\inlcode{Succ}}{\arrowtype{\groundtype{Nat}}{\groundtype{Nat}}}$:
+\[ \reduces{ \fixpoint{\inlcode{Succ}} }{ ? } \]
+this term is well-typed and closed ($\typerel{\emptyset{}}{\fixpoint{\inlcode{Succ}}}{\groundtype{Nat}}$) 
+but is not a value; thus progress applies, even though no reduction rule applies.
+Two possible solutions we thought of are:
+\begin{enumerate}
+    \item Make so that constants have a variant of the function type 
+    (e.g. $\typerel{\emptyset{}}{\inlcode{Succ}}{\groundtype{Nat}\leadsto{}\groundtype{Nat}}$)
+    to which the fixpoint combinator cannot be applied;
+    \item Add a new reduction rule:
+    \[ \prftree[r]{R-CstFix}{c \in \lconstants}{\reduces{\fixpoint{c}}{\app{c}{\fixpoint{c}}}} \]
+\end{enumerate}
+
+\noindent
+One other thing to consider is the semantics of the constants with function type.
+Assume we have 
+\[\lconstants := \enumset{\inlcode{Add},\ 0,\ 1,\ 2,\ \ldots{}}\]
+and consider $\typerel{\emptyset{}}{\app{\app{\inlcode{Add}}{0}}{1}}{\groundtype{Nat}}$.
+We found two possible interpretations of this situation:
+\begin{enumerate}
+    \item Consider $\app{\app{\inlcode{Add}}{0}}{1}$ to be a value, but we then have two values, $1$ and $\app{\app{\inlcode{Add}}{0}}{1}$, which are not syntactically equal, yet semantically equal;
+    \item Add some reduction rule such that $\reduces{\app{\app{\inlcode{Add}}{0}}{1}}{1}$.
+\end{enumerate}
+The first solution seemed to have some unwanted properties, so we discarded it; 
+the second one required a way to specify the new reduction rules.
+Adding the reduction rules for this example is simple and wouldn't change the proofs too much.
+However, we did not want to hard-code more constructs into the calculus:
+we wanted the constants to be as generic as possible.
+Allowing the addition of new reduction rules seemed like some kind of safe 
+``plugins'' rather than simply adding constants.
+
+Finally, moving from STLC to System F reduced the utility of constants.
+More precisely, System F allows usage of Böhm-Berarducci encoding \cite{bbencodingArt, bbencodingBlog},
+which allows to encode in a practical way many sets of constants which would need to be implemented as extensions in STLC.
+
+Considering all this, we decided to concentrate instead on adapting the proofs to System F, and discarded the constants.
+

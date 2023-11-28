@@ -1,0 +1,37 @@
+One interesting question is ``when is (or should) a negative shift be valid?''.
+The first condition we came with is presented in \cref{fig:synt_shift}.
+
+The only thing which is checked is that, after performing the shift,
+the resulting term is a valid lambda term;
+this simply means that no variable ends up with a negative index.
+
+This way of thinking is perfectly valid, however it has two main downsides:
+\begin{enumerate}
+    \item There is no (simple) relationship between allowing a negative shift and (not) having free variables;
+    \item The obtained term might have (semantically) nothing in common with the original term.
+\end{enumerate}
+The second point is better explained with an example:
+\[\shift{-1}{0}{\abs{T}{1}} = \abs{T}{0}\]
+the free variable in the body became bound after the shift.
+This suggests that this precondition is too weak and allows shifts which will never be of any use,
+as they ``break the semantics'' of the shifted term.
+
+It is possible to rewrite the precondition while keeping our example in mind;
+this results in \cref{fig:sem_shift}
+
+We see that the shift presented before would be rejected, as $1+(-1) < 1$.
+This new version loses some properties of the first one, 
+however those properties were of no use for our implementation.
+It also becomes possible to prove a really handy propriety,
+which is that $\forall t \in\lterms.\ \forall d > 0.\ \forall c \in \N$
+\begin{gather*}
+    \inlcode{t.negShiftValidity(-d, c)}\\
+    ==\\
+    \inlcode{!t.hasFreeVariablesIn(c, d)}
+\end{gather*}
+In fact, this property holds trivially: 
+the two definition are the same up to some mild changes in the \inlcode{Var} case induced by the inverted sign.
+
+We thus decided to completely get rid of the concept of \inlcode{negShiftValidity},
+and simply used \inlcode{hasFreeVariablesIn} as a precondition for negative shifts.
+We still considered this reflection meaningful, as the simple precondition is unrelated to free variables, and the more thoughtful one can seem uselessly restrictive.
