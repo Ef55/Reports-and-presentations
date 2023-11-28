@@ -1,0 +1,129 @@
+\usepackage{prftree} % \prftree
+\usepackage{extarrows} % \xlongritharrow
+\usepackage{tensor} % \tensor
+\usepackage{graphicx} % \blacktriangleright
+\usepackage{xifthen} % \ifthenelse, \isempty
+
+% Misc
+\newcommand{\autopar}[1]{\ifthenelse{\isempty{#1}}{}{\left(#1\right)}}
+\newcommand{\pair}[2]{{#1 \circ #2}}
+\newcommand{\separator}[0]{\mathrel{\ |\ }}
+\newcommand{\defeq}[0]{\mathrel{::=}}
+\newcommand{\hole}[0]{[]}
+\newcommand{\substitute}[3]{\left[#1 \mapsto #2 \right]#3}
+\newcommand{\domain}[1]{\text{dom}\autopar{#1}}
+\newcommand{\wildcard}[0]{\raisebox{2pt}{\,\_\,}}
+\newcommand{\freevars}[1]{\text{FV}\autopar{#1}}
+
+
+
+% Labels/lattice
+\newcommand{\labels}[0]{\mathcal{L}}
+\newcommand{\glb}[0]{\sqcap}
+\newcommand{\lub}[0]{\sqcup}
+\newcommand{\lsub}[0]{\sqsubseteq}
+\newcommand{\downset}[1]{{#1\!\downarrow}}
+\newcommand{\labelof}[1]{\labels{}_\text{of}\!\autopar{#1}}
+\newcommand{\labelsin}[1]{\labels{}_\text{in}\!\autopar{#1}}
+
+
+
+%\newcommand{\ell}
+\newcommand{\emm}[0]{m}
+\newcommand{\enn}[0]{n}
+\newcommand{\ahh}[0]{h}
+\newcommand{\epp}[0]{\rho}
+
+
+
+% Types
+\newcommand{\constpretype}[0]{\mathcal{C}}
+\newcommand{\arrowpretype}[3]{{#1 \xrightarrow{#2} #3}}
+\newcommand{\refpretype}[1]{{\textsc{Ref}\ #1}}
+\newcommand{\toppretype}[0]{\textsc{Top}}
+\newcommand{\type}[2]{\ensuremath{\tensor[_{{#1}}]{{#2}}{}}}
+\newcommand{\constype}[1]{\type{#1}{\constpretype}}
+\newcommand{\arrowtype}[4]{\type{#1}{\left(\arrowpretype{#2}{#3}{#4}\right)}}
+\newcommand{\reftype}[2]{{\type{#1\,}{\refpretype{#2}}}}
+\newcommand{\toptype}[1]{\type{#1}{\toppretype}}
+
+
+
+% Subtyping
+% \newcommand{\tsub}[0]{\ensuremath{\mathrel{\prec:}}}
+\newcommand{\atsub}[0]{\ensuremath{\mathrel{<:}}}
+\newcommand{\notatsub}[0]{\ensuremath{\mathrel{\mathrlap{<:}{\,\,/}}}}
+
+
+
+% Lambda-terms
+\newcommand{\typeseparator}[0]{{:}\,}
+\newcommand{\typed}[2]{#1\typeseparator{}#2}
+\newcommand{\slet}[2]{\texttt{let}\, {#1} = {#2}}
+\newcommand{\seq}[2]{{#1;\, #2}}
+
+\newcommand{\abs}[3]{\lambda\typed{#1}{#2}.\ #3}
+\newcommand{\app}[2]{#1\,#2}
+\newcommand{\deref}[1]{{!#1}}
+\newcommand{\enew}[2]{\texttt{new}\left[#1\right]\, #2}
+\newcommand{\letseq}[4]{\seq{\slet{\typed{#1}{#2}}{#3}}{#4}}
+\newcommand{\asseq}[3]{\seq{{#1} := {#2}}{#3}}
+
+\newcommand{\unit}[0]{()}
+
+
+
+% Lambda-reduction
+\newcommand{\reduces}[5][]{\pair{#2}{#3} \ \xlongrightarrow{#1} \  \pair{#4}{#5}}
+\newcommand{\creduces}[4]{\reduces[*]{#1}{#2}{#3}{#4}} % Closure reduction
+\newcommand{\mreduces}[4]{\reduces[=]{#1}{#2}{#3}{#4}} % Maybe reduction
+% \newcommand{\sreduces}[4]{\reduces[+]{#1}{#2}{#3}{#4}} % Sequence reduction
+
+
+
+% Lambda-equivalence, normal form...
+\newcommand{\normalform}[2][]{{{#2}\downarrow^{#1}}}
+\newcommand{\obsequiv}[0]{\equiv}
+
+
+
+% Context ops
+\newcommand{\supervc}[0]{\supseteq^{\gamma}}
+\newcommand{\contextextend}[3]{#1+\enumset{\typed{#2}{#3}}}
+
+
+% Store ops
+\newcommand{\superstore}[0]{\supseteq^{\sigma}}
+\newcommand{\storeupdate}[3]{\substitute{#2}{#3}{#1}}
+\newcommand{\storeextend}[3]{#1+\left\{#2\mapsto{}#3\right\}}
+
+
+
+% Judgments
+\newcommand{\arrowvdash}{%
+    \mathrel{%
+        \vdash\hspace*{-5pt}%
+        \raisebox{2.65pt}{\scalebox{.33}{\(\blacktriangleright\)}}%
+    }%
+}
+\newcommand{\storejudgmentscheme}[4]{{\pair{#1}{#2} #4 #3}}
+\newcommand{\judgmentscheme}[6]{{\pair{#1}{#2} #6 #3 \ : \pair{#4}{#5}}}
+\newcommand{\judgment}[5]{\judgmentscheme{#1}{#2}{#3}{#4}{#5}{\vdash{}}}
+\newcommand{\ajudgment}[5]{\judgmentscheme{#1}{#2}{#3}{#4}{#5}{\arrowvdash{}}}
+\newcommand{\asjudgment}[3]{\storejudgmentscheme{#1}{#2}{#3}{\arrowvdash{}}}
+
+
+% Relevance & erasure
+\newcommand{\threshold}[0]{\ensuremath{\tau}}
+\newcommand{\relevance}[2][\threshold]{\ensuremath{\mathcal{R}^{#1}\!\autopar{#2}}}
+\newcommand{\erasure}[2][\threshold]{\ensuremath{\mathcal{E}^{#1}\!\autopar{#2}}}
+\newcommand{\eGamma}[0]{\erasure{\Gamma}}
+\newcommand{\eSigma}[0]{\erasure{\Sigma}}
+
+
+
+% Store extension
+%\newcommand{\stextends}[4]{\pair{\pair{#1}{#2}}{#3} \ \rightsquigarrow \ #4}
+\newcommand{\extender}{\text{ext}}
+\newcommand{\stextends}[2]{\extender^{\sigma}\!\autopar{#1,#2}}
+\newcommand{\vtextends}[1]{\extender^{\gamma}\!\autopar{#1}}

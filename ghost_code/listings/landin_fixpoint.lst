@@ -1,0 +1,8 @@
+\f: (T -> T) -> (T -> T). {
+    let r: Ref (T -> T) = new[T -> T] (\x: T. x);
+    r := f( \x: T. {
+        let self: T -> T = !r
+        self x
+    } )
+    !r
+}

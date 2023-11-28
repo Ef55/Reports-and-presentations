@@ -1,0 +1,11 @@
+\usepackage{xifthen}
+
+\def\@commasep<#1,#2>{#1 \ifthenelse{\isempty{#2}}{}{,\, \@commasep<#2>}}
+\newcommand{\enumset}[1]{\left\{ \@commasep<#1,> \right\}}
+
+\newcommand{\setbuilder}[2]{\left\{ #1 \mid #2 \right\}}
+
+\newcommand{\nats}[0]{\mathbb{N}}
+\newcommand{\powerset}[1]{\mathcal{P}\autopar{#1}}
+
+\newcommand{\sunion}[0]{\mathbin{\cup}}

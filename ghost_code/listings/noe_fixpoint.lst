@@ -1,0 +1,6 @@
+\f: (Unit -> T) -> T. \dummy: T. {
+    let r: Ref T = new[T] dummy;
+    let a: Unit -> T = \_: Unit. !r 
+    r := f(a)
+    !r
+}

@@ -1,0 +1,32 @@
+\RequirePackage{amsmath}
+\RequirePackage{amsmath}
+\RequirePackage{cleveref}
+
+\RequirePackage[scale=0.9]{FiraMono}
+\RequirePackage{listings}
+
+\renewcommand{\lstlistingname}{Algorithm}
+\lstset{
+    extendedchars=\true,
+    inputencoding=utf8,
+    texcl=true,
+    escapeinside=``,
+    frame=tb,
+    basicstyle=\ttfamily,
+    keywordstyle=\bfseries,,
+    morekeywords={Assuming, Input, Output, Runtime, Space, Success, fun, let, if, then, else, for, in, while, loop, do, return, Initialize, Process, assert, match, case, require, class, object, ensuring, Ghost},
+    morecomment=[l]{//},
+    numbers=left,
+    numberstyle=\ttfamily,
+    stepnumber=1,
+    xleftmargin=2em,
+    framexleftmargin=2em,
+    breaklines=true,
+    breakatwhitespace,
+    % For this project only
+    moredelim=**[is][\color{gray}]{\#}{\#},
+}
+\crefname{lstlisting}{algorithm}{algorithms}
+
+\newcommand{\bigo}[1]{\ensuremath{\mathcal{O}\left(#1\right)}}
+\newcommand{\bigomega}[1]{\ensuremath{\Omega\left(#1\right)}}
