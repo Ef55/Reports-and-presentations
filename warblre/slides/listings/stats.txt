@@ -1,0 +1,24 @@
+spec    proof comments
+  35      109        1 props/Compile.v
+  11       39        2 props/Definitions.v
+ 133      207        0 props/EarlyErrors.v
+   7       22       28 props/Incorrectness.v
+ 351      645      122 props/Match.v
+  81        0        3 spec/base/Characters.v
+  24        0        5 spec/base/Coercions.v
+  26        0        2 spec/base/Errors.v
+  68       22        8 spec/base/Numeric.v
+  33        0        3 spec/Base.v
+  27       10        0 spec/ClutterFree.v
+ 109      356      236 spec/Frontend.v
+  59        0       34 spec/Notation.v
+ 225      183       45 spec/Patterns.v
+ 447        0      385 spec/Semantics.v
+ 169        0       62 spec/StaticSemantics.v
+ 205        0        5 tactics/Focus.v
+  14        0        0 tactics/Specialize.v
+ 142       28        2 tactics/Tactics.v
+ 247      365        5 utils/List.v
+   6        0        0 utils/Option.v
+  61        3        1 utils/Result.v
+2480     1989      949 total
